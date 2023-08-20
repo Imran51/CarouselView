@@ -79,16 +79,19 @@ extension CarouselView: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return carouselData.count
+        // for infinite horizontal scroll
+        return Int.max
+        // only scroll between items
+        // return carouselData.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CarouselCollectionViewCell.cellId, for: indexPath) as? CarouselCollectionViewCell else {
             return UICollectionViewCell()
         }
-        
-        let image = carouselData[indexPath.row].image
-        let text = carouselData[indexPath.row].text
+        let item = carouselData[indexPath.row % pages]
+        let image = item.image
+        let text = item.text
         
         cell.configure(image: image, text: text)
         
@@ -113,7 +116,8 @@ extension CarouselView {
             guard let self else {
                 return
             }
-            self.currentPage = items.last?.indexPath.row ?? 0
+            let row = items.last?.indexPath.row ?? 0
+            self.currentPage = row % pages
         }
         
         carouselCollectionView.collectionViewLayout = UICollectionViewCompositionalLayout(section: section)
